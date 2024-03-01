@@ -1,31 +1,54 @@
 import { Audio } from 'expo-av';
 import React, { useEffect, useState } from 'react';
-import songs from "../assets/songs/songs.json";
 import { StatusBar, StyleSheet, Dimensions, ScrollView, Pressable, Text, View, Image, Button } from 'react-native';
 
+const api = "http://localhost";
 const screenWidth = Dimensions.get('window').width;
 const songWidth = Math.floor(screenWidth * 0.25) - 20;
 
 export function Music() {
     const [audio, setAudio] = useState(null);
-    const [text, setText] = useState(Array(songs.data.length).fill("▶"));
+    const [songs, setSongs] = useState([]);
+    const [text, setText] = useState([]);
+
+    // fetch songs from api
+    function fetchSongs() {
+        fetch(`${api}/songs.php`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+                return response.json(); // Parse JSON data
+            })
+            .then(data => {
+                setSongs(data); // Update state with fetched data
+                setText(Array(data.length).fill("▶"));
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+
+    useEffect(() => {
+        fetchSongs();
+    }, []);
 
     const clickPlay = async (song) => {
         // handle previous sounds
         if(audio) {
             // replace all play buttons with play icon
-            setText(Array(songs.data.length).fill("▶"));
+            setText(Array(songs.length).fill("▶"));
             await audio.stopAsync();
         }
 
         // create sound object
         if(!audio || audio.id !== song.id) {  
             // create song and save id
-            const { sound } = await Audio.Sound.createAsync(require(`../assets/songs/cwy.mp3`));
+            const { sound } = await Audio.Sound.createAsync(`${api}/audio/${song.id}.mp3`);
             sound.id = song.id;
 
             // change play button to pause button and play the song
-            setText(text.map((v, i) => i === song.id - 1 ? "⏸" : "▶"));
+            setText(text.map((v, i) => i === song.id - songs[0].id ? "⏸" : "▶"));
             sound.playAsync();
             setAudio(sound);
         } else {
@@ -34,9 +57,9 @@ export function Music() {
     };
 
     const generateSongs = () => {
-        return songs.data.map((v, i) => (
+        return songs.map((v, i) => (
             <View key={i} style={styles.songContainer}>
-                <Image source={require("../assets/favicon.png")} style={styles.songImage}/>
+                <Image source={`${api}/images/${v.id}.jpg`} style={styles.songImage}/>
                 <Text style={styles.text}>{v.name}</Text>
                 <Pressable onPress={() => clickPlay(v)} style={styles.playButton}>
                     <Text>{text[i]}</Text>
