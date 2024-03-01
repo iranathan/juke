@@ -1,0 +1,10 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "name": "Cool with you", 
+            "photo": "favicon.png",
+            "song": "cwy.mp3"
+        }
+    ]
+}

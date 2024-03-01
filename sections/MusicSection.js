@@ -1,45 +1,44 @@
 import { Audio } from 'expo-av';
-import AudioPlayer from '../player';
 import React, { useEffect, useState } from 'react';
+import songs from "../assets/songs/songs.json";
 import { StatusBar, StyleSheet, Dimensions, ScrollView, Pressable, Text, View, Image, Button } from 'react-native';
 
 const screenWidth = Dimensions.get('window').width;
 const songWidth = Math.floor(screenWidth * 0.25) - 20;
-const songs = [
-    {name: "Cool with you", src: "cwy.mp3"},
-    {name: "Cool with you", src: "cwy.mp3"},
-]
 
 export function Music() {
-    const [player, setPlayer] = useState(null);
+    const [audio, setAudio] = useState(null);
     const [text, setText] = useState(Array(songs.length).fill("▶"));
 
     const clickPlay = async (song) => {
-        if (player) {
-            if(player.isPlaying) {
-                setText(Array(songs.length).fill("▶"))
-                return player.pauseAsync();
-            }
-            player.unloadAsync();
+        // handle previous sounds
+        if(audio) {
+            // replace all play buttons with play icon
+            setText(Array(songs.length).fill("▶"));
+            await audio.stopAsync();
         }
-        const sound = new Audio.Sound();
-        try {
-            await sound.loadAsync(require(`../assets/songs/${songs[song].src}`));
-            await sound.playAsync();
-            setText(Array(songs.length).fill("▶"))
-            setText(text => text.map((v, i) => i === song ? "⏸︎" : v));
-            setPlayer(sound);
-        } catch (error) {
-            console.log(error);
+
+        // create sound object
+        if(!audio || audio.id !== song.id) {  
+            // create song and save id
+            const { sound } = await Audio.Sound.createAsync(require(`../assets/songs/cwy.mp3`));
+            sound.id = song.id;
+
+            // change play button to pause button and play the song
+            setText(text.map((v, i) => i === song.id - 1 ? "⏸" : "▶"));
+            sound.playAsync();
+            setAudio(sound);
+        } else {
+            setAudio(null);
         }
     };
 
     const generateSongs = () => {
-        return songs.map((v, i) => (
+        return songs.data.map((v, i) => (
             <View key={i} style={styles.songContainer}>
                 <Image source={require("../assets/favicon.png")} style={styles.songImage}/>
                 <Text style={styles.text}>{v.name}</Text>
-                <Pressable onPress={() => clickPlay(i)} style={styles.playButton}>
+                <Pressable onPress={() => clickPlay(v)} style={styles.playButton}>
                     <Text>{text[i]}</Text>
                 </Pressable>
             </View>
