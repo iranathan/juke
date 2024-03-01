@@ -8,13 +8,13 @@ const songWidth = Math.floor(screenWidth * 0.25) - 20;
 
 export function Music() {
     const [audio, setAudio] = useState(null);
-    const [text, setText] = useState(Array(songs.length).fill("▶"));
+    const [text, setText] = useState(Array(songs.data.length).fill("▶"));
 
     const clickPlay = async (song) => {
         // handle previous sounds
         if(audio) {
             // replace all play buttons with play icon
-            setText(Array(songs.length).fill("▶"));
+            setText(Array(songs.data.length).fill("▶"));
             await audio.stopAsync();
         }
 
