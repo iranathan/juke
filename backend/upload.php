@@ -61,6 +61,7 @@ $requiredFiles = checkRequiredFiles(["image", "music"]);
 if (!empty($requiredFiles)) {
     $errors[] = "The following files were not supplied: " . implode(", ", $requiredFiles);
 }
+redirectWithErrors($errors);
 
 // Validate password
 if (!validatePassword($_POST["password"])) {

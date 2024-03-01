@@ -1,6 +1,6 @@
 <?php
 require("database.php");
-$songs = fetch_songs();
+$result = fetch_songs();
 ?>
 
 <!DOCTYPE html>

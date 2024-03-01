@@ -7,16 +7,6 @@ if (!$database) {
     die("Connection failed: " . $database->lastErrorMsg());
 }
 
-function check_args($args, $target){
-    foreach($args as $arg){
-        $required = [];
-        if(!isset($target[$arg])){
-            $required[] = $arg;
-        }
-        return $required;
-    }
-}
-
 function add_song($name, $image, $music){
     global $database;
     $statement = $database->prepare("INSERT INTO songs (name) VALUES (:name)");
@@ -24,8 +14,8 @@ function add_song($name, $image, $music){
     $statement->execute();
 
     $id = $database->lastInsertRowID();
-    move_uploaded_file($music["tmp_name"], "./uploads/$id.mp3");
-    move_uploaded_file($image["tmp_name"], "./uploads/$id.jpg");
+    move_uploaded_file($music["tmp_name"], "./audio/$id.mp3");
+    move_uploaded_file($image["tmp_name"], "./images/$id.jpg");
 }
 
 function fetch_songs(){
