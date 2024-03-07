@@ -2,7 +2,7 @@ import { Audio } from 'expo-av';
 import React, { useEffect, useState } from 'react';
 import { StatusBar, StyleSheet, Dimensions, ScrollView, Pressable, Text, View, Image, Button, TouchableOpacity } from 'react-native';
 
-const api = "http://localhost";
+const api = "https://88888.stu.sd-lab.nl/juke";
 const screenWidth = Dimensions.get('window').width;
 const songWidth = Math.floor(screenWidth * 0.333) - 20;
 
@@ -79,7 +79,7 @@ export function Music() {
                 <StatusBar style="auto" />
             </View>
             <View style={styles.controlContainer}>
-                <ProgressBar progress={0.5} color={Colors.red800} />
+                
             </View>
         </>
     );
