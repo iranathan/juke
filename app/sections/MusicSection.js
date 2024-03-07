@@ -1,10 +1,10 @@
 import { Audio } from 'expo-av';
 import React, { useEffect, useState } from 'react';
-import { StatusBar, StyleSheet, Dimensions, ScrollView, Pressable, Text, View, Image, Button } from 'react-native';
+import { StatusBar, StyleSheet, Dimensions, ScrollView, Pressable, Text, View, Image, Button, TouchableOpacity } from 'react-native';
 
 const api = "http://localhost";
 const screenWidth = Dimensions.get('window').width;
-const songWidth = Math.floor(screenWidth * 0.25) - 20;
+const songWidth = Math.floor(screenWidth * 0.333) - 20;
 
 export function Music() {
     const [audio, setAudio] = useState(null);
@@ -44,7 +44,7 @@ export function Music() {
         // create sound object
         if(!audio || audio.id !== song.id) {  
             // create song and save id
-            const { sound } = await Audio.Sound.createAsync(`${api}/audio/${song.id}.mp3`);
+            const { sound } = await Audio.Sound.createAsync(`${api}/audio/${song.id}.${song.audioType}`);
             sound.id = song.id;
 
             // change play button to pause button and play the song
@@ -59,7 +59,7 @@ export function Music() {
     const generateSongs = () => {
         return songs.map((v, i) => (
             <View key={i} style={styles.songContainer}>
-                <Image source={`${api}/images/${v.id}.jpg`} style={styles.songImage}/>
+                <Image source={`${api}/images/${v.id}.${v.imageType}`} style={styles.songImage}/>
                 <Text style={styles.text}>{v.name}</Text>
                 <Pressable onPress={() => clickPlay(v)} style={styles.playButton}>
                     <Text>{text[i]}</Text>
@@ -69,14 +69,19 @@ export function Music() {
     };
 
     return (
-        <View style={styles.container}>
-            <ScrollView>
-                <View style={styles.flexContainer}>
-                    {generateSongs()}
-                </View>
-            </ScrollView>
-            <StatusBar style="auto" />
-        </View>
+        <>
+            <View style={styles.container}>
+                <ScrollView>
+                    <View style={styles.flexContainer}>
+                        {generateSongs()}
+                    </View>
+                </ScrollView>
+                <StatusBar style="auto" />
+            </View>
+            <View style={styles.controlContainer}>
+                <ProgressBar progress={0.5} color={Colors.red800} />
+            </View>
+        </>
     );
 }
 
@@ -97,6 +102,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: "#121212"
+    },
+    controlContainer: {
+        height: "15%",
+        backgroundColor: "#000000",
+        color: "white"
     },
     text: {
         fontSize: 24,
