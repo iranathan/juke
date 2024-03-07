@@ -69,7 +69,7 @@ if (!validatePassword($_POST["password"])) {
 }
 
 // Validate image file
-if (!validateFileSize($_FILES["image"], 10000000) || !validateFileExtension($_FILES["image"], ["jpg", "jpeg"])) {
+if (!validateFileSize($_FILES["image"], 10000000) || !validateFileExtension($_FILES["image"], ["jpg", "jpeg", "png"])) {
     $errors[] = "The image file must be in JPG or JPEG format and should not exceed 10MB";
 }
 
