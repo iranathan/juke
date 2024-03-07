@@ -34,34 +34,37 @@ export function Music() {
     }, []);
 
     const clickPlay = async (song) => {
+
         // handle previous sounds
         if(audio) {
             // replace all play buttons with play icon
             setText(Array(songs.length).fill("▶"));
             await audio.stopAsync();
         }
-
+    
         // create sound object
         if(!audio || audio.id !== song.id) {  
             // create song and save id
-            const { sound } = await Audio.Sound.createAsync(`${api}/audio/${song.id}.${song.audioType}`);
+            const { sound } = await Audio.Sound.createAsync({uri: `${api}/audio/${song.id}.${song.audioType}`});
             sound.id = song.id;
-
+    
             // change play button to pause button and play the song
-            setText(text.map((v, i) => i === song.id - songs[0].id ? "⏸" : "▶"));
-            sound.playAsync();
+            const newText = text.map((v, i) => i === song.id - songs[0].id ? "⏸" : "▶");
+            setText(newText);
+            sound.playAsync()
             setAudio(sound);
         } else {
             setAudio(null);
         }
     };
+    
 
     const generateSongs = () => {
         return songs.map((v, i) => (
             <View key={i} style={styles.songContainer}>
-                <Image source={`${api}/images/${v.id}.${v.imageType}`} style={styles.songImage}/>
+                <Image source={{uri: `${api}/images/${v.id}.${v.imageType}`}} style={styles.songImage}/>
                 <Text style={styles.text}>{v.name}</Text>
-                <Pressable onPress={() => clickPlay(v)} style={styles.playButton}>
+                <Pressable onPress={ () => clickPlay(v).catch(console.error) } style={styles.playButton}>
                     <Text>{text[i]}</Text>
                 </Pressable>
             </View>
@@ -79,7 +82,7 @@ export function Music() {
                 <StatusBar style="auto" />
             </View>
             <View style={styles.controlContainer}>
-                
+
             </View>
         </>
     );
