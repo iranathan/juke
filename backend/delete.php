@@ -1,15 +1,10 @@
 <?php
-    // print errores
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
-
     require_once("database.php");
 
     if($_SERVER["REQUEST_METHOD"] == "GET" ) {
         $id = isset($_GET["id"]) ? $_GET["id"] : null;
         if($id === null){
-
+            header("Location: ./list.php");
         }
     }
 
@@ -17,13 +12,11 @@
         $id = isset($_POST["id"]) ? $_POST["id"] : null;
         $password = isset($_POST["password"]) ? $_POST["password"] : null;
         if($id === null || $password === null){
-            require("list.php");
-            die();
+            header("Location: ./list.php");
         }
         if($password === "test123"){
             delete_song($id);
-            require("list.php");
-            die();
+            header("Location: ./list.php");
         } else{
             die("<h2>Password is incorrect</h2>");
         }

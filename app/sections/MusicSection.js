@@ -1,12 +1,14 @@
 import { Audio } from 'expo-av';
 import React, { useEffect, useState } from 'react';
-import { StatusBar, StyleSheet, Dimensions, ScrollView, Pressable, Text, View, Image, Button, TouchableOpacity } from 'react-native';
+import { StatusBar, StyleSheet, Dimensions, ScrollView, Pressable, Text, View, Image } from 'react-native';
+import * as Progress from 'expo-progress';
 
 const api = "https://88888.stu.sd-lab.nl/juke";
 const screenWidth = Dimensions.get('window').width;
 const songWidth = Math.floor(screenWidth * 0.333) - 20;
 
 export function Music() {
+    const [progress, setProgress] = useState(0);
     const [audio, setAudio] = useState(null);
     const [songs, setSongs] = useState([]);
     const [text, setText] = useState([]);
@@ -31,7 +33,20 @@ export function Music() {
 
     useEffect(() => {
         fetchSongs();
-    }, []);
+
+        const intervalId = setInterval(async () => {
+            if(audio) {
+                const status = await audio.getStatusAsync();
+                if(status.isLoaded && status.didJustFinish) {
+                    setAudio(null);
+                    setText(Array(songs.length).fill("▶️"));
+                }
+                setProgress(status.positionMillis / status.durationMillis);
+            }
+        }, 1000);
+
+        return () => clearInterval(intervalId);
+    }, [audio]);
 
     const clickPlay = async (song) => {
 
@@ -82,7 +97,7 @@ export function Music() {
                 <StatusBar style="auto" />
             </View>
             <View style={styles.controlContainer}>
-
+                <Progress.Bar progress={progress} width={screenWidth} color="#FFFFFF" />
             </View>
         </>
     );
@@ -107,7 +122,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#121212"
     },
     controlContainer: {
-        height: "15%",
+        height: 30,
         backgroundColor: "#000000",
         color: "white"
     },
@@ -133,3 +148,5 @@ const styles = StyleSheet.create({
         height: 100,
     },
 });
+
+export default Music;
