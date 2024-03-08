@@ -24,9 +24,32 @@ function add_song($name, $image, $music){
     move_uploaded_file($image["tmp_name"], "./images/$id.$extensionImage");
 }
 
+
 function fetch_songs(){
     global $database;
     $statement = $database->prepare("SELECT * FROM songs");
     $result = $statement->execute();
     return $result;
+}
+
+function fetch_song($id){
+    global $database;
+    $statement = $database->prepare("SELECT * FROM songs WHERE id = :id");
+    $statement->bindParam(':id', $id);
+    $result = $statement->execute();
+    return $result;
+}
+
+function delete_song($id){
+    global $database;
+    
+    // delete the audio and image files
+    $song = fetch_song($id)->fetchArray();
+    unlink("./audio/" . $song["id"] . "." . $song["audioType"]);
+    unlink("./images/" . $song["id"] . "." . $song["imageType"]);
+
+    // delete the song from the database
+    $statement = $database->prepare("DELETE FROM songs WHERE id = :id");
+    $statement->bindParam(':id', $id);
+    return $statement->execute();
 }
