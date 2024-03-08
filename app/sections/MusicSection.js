@@ -22,7 +22,7 @@ export function Music() {
             })
             .then(data => {
                 setSongs(data); // Update state with fetched data
-                setText(Array(data.length).fill("▶"));
+                setText(Array(data.length).fill("▶️"));
             })
             .catch(error => {
                 console.error(error);
@@ -38,7 +38,7 @@ export function Music() {
         // handle previous sounds
         if(audio) {
             // replace all play buttons with play icon
-            setText(Array(songs.length).fill("▶"));
+            setText(Array(songs.length).fill("▶️"));
             await audio.stopAsync();
         }
     
@@ -49,7 +49,7 @@ export function Music() {
             sound.id = song.id;
     
             // change play button to pause button and play the song
-            const newText = text.map((v, i) => i === song.id - songs[0].id ? "⏸" : "▶");
+            const newText = text.map((v, i) => i === song.id - songs[0].id ? "⏸️" : "▶️");
             setText(newText);
             sound.playAsync()
             setAudio(sound);
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 0,
         right: 0,
-        backgroundColor: "#1ed760",
+        backgroundColor: "#FFFFFF",
         width: 50,
         height: 50,
         borderRadius: 25,
