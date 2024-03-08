@@ -69,13 +69,13 @@ if (!validatePassword($_POST["password"])) {
 }
 
 // Validate image file
-if (!validateFileSize($_FILES["image"], 10000000) || !validateFileExtension($_FILES["image"], ["jpg", "jpeg", "png"])) {
-    $errors[] = "The image file must be in JPG or JPEG format and should not exceed 10MB";
+if (!validateFileSize($_FILES["image"], 15000000) || !validateFileExtension($_FILES["image"], ["jpg", "jpeg", "png"])) {
+    $errors[] = "The image file must be in JPG or JPEG format and should not exceed 15MB";
 }
 
 // Validate music file
-if (!validateFileSize($_FILES["music"], 10000000) || !validateFileExtension($_FILES["music"], ["mp3"])) {
-    $errors[] = "The music file must be in MP3 format and should not exceed 10MB";
+if (!validateFileSize($_FILES["music"], 15000000) || !validateFileExtension($_FILES["music"], ["mp3"])) {
+    $errors[] = "The music file must be in MP3 format and should not exceed 15MB";
 }
 
 // Redirect with errors if any

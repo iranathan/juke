@@ -1,7 +1,7 @@
 import { Audio } from 'expo-av';
 import React, { useEffect, useState } from 'react';
 import { StatusBar, StyleSheet, Dimensions, ScrollView, Pressable, Text, View, Image } from 'react-native';
-import * as Progress from 'expo-progress';
+import { ProgressBar } from 'react-native-paper';
 
 const api = "https://88888.stu.sd-lab.nl/juke";
 const screenWidth = Dimensions.get('window').width;
@@ -36,10 +36,12 @@ export function Music() {
 
         const intervalId = setInterval(async () => {
             if(audio) {
+                console.log(text);
                 const status = await audio.getStatusAsync();
                 if(status.isLoaded && status.didJustFinish) {
                     setAudio(null);
                     setText(Array(songs.length).fill("▶️"));
+                    console.log("Song finished");
                 }
                 setProgress(status.positionMillis / status.durationMillis);
             }
@@ -54,7 +56,7 @@ export function Music() {
         if(audio) {
             // replace all play buttons with play icon
             setText(Array(songs.length).fill("▶️"));
-            await audio.stopAsync();
+            audio.stopAsync();
         }
     
         // create sound object
@@ -64,7 +66,8 @@ export function Music() {
             sound.id = song.id;
     
             // change play button to pause button and play the song
-            const newText = text.map((v, i) => i === song.id - songs[0].id ? "⏸️" : "▶️");
+            const newText = text.map((v, i) => songs[i].id === song.id ? "⏸️" : "▶️");
+            console.log(newText);
             setText(newText);
             sound.playAsync()
             setAudio(sound);
@@ -97,7 +100,7 @@ export function Music() {
                 <StatusBar style="auto" />
             </View>
             <View style={styles.controlContainer}>
-                <Progress.Bar progress={progress} width={screenWidth} color="#FFFFFF" />
+                <ProgressBar progress={progress} />
             </View>
         </>
     );
@@ -122,8 +125,9 @@ const styles = StyleSheet.create({
         backgroundColor: "#121212"
     },
     controlContainer: {
-        height: 30,
+        height: "15%",
         backgroundColor: "#000000",
+        textAlign: "center",
         color: "white"
     },
     text: {
