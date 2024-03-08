@@ -5,7 +5,7 @@ import { ProgressBar } from 'react-native-paper';
 
 const api = "https://88888.stu.sd-lab.nl/juke";
 const screenWidth = Dimensions.get('window').width;
-const songWidth = Math.floor(screenWidth * 0.333) - 20;
+const songWidth = Math.floor(screenWidth * 0.333) - 30;
 
 export function Music() {
     const [progress, setProgress] = useState(0);
@@ -32,22 +32,6 @@ export function Music() {
     useEffect(() => {
         fetchSongs();
     }, []);
-
-    useEffect(() => {
-        const intervalId = setInterval(async () => {
-            if (currentSong) {
-                const status = await currentSong.sound.getStatusAsync();
-                if (status.isLoaded && status.didJustFinish) {
-                    setCurrentSong(null);
-                    setProgress(0);
-                } else {
-                    setProgress(status.positionMillis / status.durationMillis);
-                }
-            }
-        }, 1000);
-
-        return () => clearInterval(intervalId);
-    }, [currentSong]);
 
     const clickPlay = async (song) => {
         if (currentSong && currentSong.id === song.id) {
