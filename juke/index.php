@@ -46,6 +46,7 @@
 <body>
     <div class="divwow">
         <h2 class="words">Upload Music</h2>
+        <a href="list.php">list</a>
         <form action="upload.php" method="post" enctype="multipart/form-data">
             <label class="words" for="title">Title:</label><br>
             <input class="words" type="text" id="title" name="title" required><br><br>

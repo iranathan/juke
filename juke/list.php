@@ -34,11 +34,12 @@ $result = fetch_songs();
             <tr>
                 <td><?php echo $row["id"]; ?></td>
                 <td><?php echo $row["name"]; ?></td>
-                <td><img src="images/<?php echo $row["id"]; ?>.jpg" width="100" height="100"></td>
-                <td><audio controls><source src="audio/<?php echo $row["id"]; ?>.mp3" type="audio/mpeg"></audio></td>
+                <td><img src="images/<?= $row["id"]; ?>.<?= $row["imageType"] ?>" width="100" height="100"></td>
+                <td><audio controls><source src="audio/<?= $row["id"]; ?>.mp3" type="audio/mpeg"></audio></td>
                 <td><a href="delete.php/?id=<?= $row["id"]; ?>">Delete</a></td>
             </tr>
         <?php endwhile; ?>
     </table>
+    <a href="index.php">Upload</a>
 </body>
 </html>

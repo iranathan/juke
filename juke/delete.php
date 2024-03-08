@@ -4,7 +4,7 @@
     if($_SERVER["REQUEST_METHOD"] == "GET" ) {
         $id = isset($_GET["id"]) ? $_GET["id"] : null;
         if($id === null){
-            header("Location: ./list.php");
+            header("Location: /juke/list.php");
         }
     }
 
@@ -12,11 +12,11 @@
         $id = isset($_POST["id"]) ? $_POST["id"] : null;
         $password = isset($_POST["password"]) ? $_POST["password"] : null;
         if($id === null || $password === null){
-            header("Location: ./list.php");
+            header("Location: /juke/list.php");
         }
         if($password === "test123"){
             delete_song($id);
-            header("Location: ./list.php");
+            header("Location: /juke/list.php");
         } else{
             die("<h2>Password is incorrect</h2>");
         }
