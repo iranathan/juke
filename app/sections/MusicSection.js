@@ -9,9 +9,8 @@ const songWidth = Math.floor(screenWidth * 0.333) - 20;
 
 export function Music() {
     const [progress, setProgress] = useState(0);
-    const [audio, setAudio] = useState(null);
     const [songs, setSongs] = useState([]);
-    const [text, setText] = useState([]);
+    const [currentSong, setCurrentSong] = useState(null);
 
     // fetch songs from api
     function fetchSongs() {
@@ -24,7 +23,6 @@ export function Music() {
             })
             .then(data => {
                 setSongs(data); // Update state with fetched data
-                setText(Array(data.length).fill("▶️"));
             })
             .catch(error => {
                 console.error(error);
@@ -33,60 +31,36 @@ export function Music() {
 
     useEffect(() => {
         fetchSongs();
+    }, []);
 
+    useEffect(() => {
         const intervalId = setInterval(async () => {
-            if(audio) {
-                console.log(text);
-                const status = await audio.getStatusAsync();
+            if(currentSong) {
+                const status = await currentSong.sound.getStatusAsync();
                 if(status.isLoaded && status.didJustFinish) {
-                    setAudio(null);
-                    setText(Array(songs.length).fill("▶️"));
-                    console.log("Song finished");
+                    setCurrentSong(null);
+                    setProgress(0);
+                } else {
+                    setProgress(status.positionMillis / status.durationMillis);
                 }
-                setProgress(status.positionMillis / status.durationMillis);
             }
         }, 1000);
 
         return () => clearInterval(intervalId);
-    }, [audio]);
+    }, [currentSong]);
 
     const clickPlay = async (song) => {
-
-        // handle previous sounds
-        if(audio) {
-            // replace all play buttons with play icon
-            setText(Array(songs.length).fill("▶️"));
-            audio.stopAsync();
-        }
-    
-        // create sound object
-        if(!audio || audio.id !== song.id) {  
-            // create song and save id
-            const { sound } = await Audio.Sound.createAsync({uri: `${api}/audio/${song.id}.${song.audioType}`});
-            sound.id = song.id;
-    
-            // change play button to pause button and play the song
-            const newText = text.map((v, i) => songs[i].id === song.id ? "⏸️" : "▶️");
-            console.log(newText);
-            setText(newText);
-            sound.playAsync()
-            setAudio(sound);
+        if(currentSong && currentSong.id === song.id) {
+            await currentSong.sound.stopAsync();
+            setCurrentSong(null);
         } else {
-            setAudio(null);
+            if (currentSong) {
+                await currentSong.sound.stopAsync();
+            }
+            const { sound } = await Audio.Sound.createAsync({uri: `${api}/audio/${song.id}.${song.audioType}`});
+            await sound.playAsync();
+            setCurrentSong({ id: song.id, sound });
         }
-    };
-    
-
-    const generateSongs = () => {
-        return songs.map((v, i) => (
-            <View key={i} style={styles.songContainer}>
-                <Image source={{uri: `${api}/images/${v.id}.${v.imageType}`}} style={styles.songImage}/>
-                <Text style={styles.text}>{v.name}</Text>
-                <Pressable onPress={ () => clickPlay(v).catch(console.error) } style={styles.playButton}>
-                    <Text>{text[i]}</Text>
-                </Pressable>
-            </View>
-        ));
     };
 
     return (
@@ -94,7 +68,15 @@ export function Music() {
             <View style={styles.container}>
                 <ScrollView>
                     <View style={styles.flexContainer}>
-                        {generateSongs()}
+                        {songs.map((song, index) => (
+                            <View key={index} style={styles.songContainer}>
+                                <Image source={{uri: `${api}/images/${song.id}.${song.imageType}`}} style={styles.songImage}/>
+                                <Text style={styles.text}>{song.name}</Text>
+                                <Pressable onPress={() => clickPlay(song).catch(console.error)} style={styles.playButton}>
+                                    <Text>{currentSong && currentSong.id === song.id ? '⏸️' : '▶️'}</Text>
+                                </Pressable>
+                            </View>
+                        ))}
                     </View>
                 </ScrollView>
                 <StatusBar style="auto" />
