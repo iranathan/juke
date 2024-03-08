@@ -35,9 +35,9 @@ export function Music() {
 
     useEffect(() => {
         const intervalId = setInterval(async () => {
-            if(currentSong) {
+            if (currentSong) {
                 const status = await currentSong.sound.getStatusAsync();
-                if(status.isLoaded && status.didJustFinish) {
+                if (status.isLoaded && status.didJustFinish) {
                     setCurrentSong(null);
                     setProgress(0);
                 } else {
@@ -50,14 +50,31 @@ export function Music() {
     }, [currentSong]);
 
     const clickPlay = async (song) => {
-        if(currentSong && currentSong.id === song.id) {
+        if (currentSong && currentSong.id === song.id) {
             await currentSong.sound.stopAsync();
             setCurrentSong(null);
         } else {
             if (currentSong) {
                 await currentSong.sound.stopAsync();
             }
-            const { sound } = await Audio.Sound.createAsync({uri: `${api}/audio/${song.id}.${song.audioType}`});
+
+            const { sound } = await Audio.Sound.createAsync({ uri: `${api}/audio/${song.id}.${song.audioType}` });
+
+            let debounceTimeout;
+
+            sound.setOnPlaybackStatusUpdate(async (status) => {
+                if (status.isLoaded && status.didJustFinish) {
+                    setCurrentSong(null);
+                    setProgress(0);
+                } else {
+                    // Debounce the setProgress call to prevent rapid flickering
+                    clearTimeout(debounceTimeout);
+                    debounceTimeout = setTimeout(() => {
+                        setProgress(status.positionMillis / status.durationMillis);
+                    }, 200); // Adjust the timeout duration as needed
+                }
+            });
+
             await sound.playAsync();
             setCurrentSong({ id: song.id, sound });
         }
@@ -70,7 +87,7 @@ export function Music() {
                     <View style={styles.flexContainer}>
                         {songs.map((song, index) => (
                             <View key={index} style={styles.songContainer}>
-                                <Image source={{uri: `${api}/images/${song.id}.${song.imageType}`}} style={styles.songImage}/>
+                                <Image source={{ uri: `${api}/images/${song.id}.${song.imageType}` }} style={styles.songImage} />
                                 <Text style={styles.text}>{song.name}</Text>
                                 <Pressable onPress={() => clickPlay(song).catch(console.error)} style={styles.playButton}>
                                     <Text>{currentSong && currentSong.id === song.id ? '⏸️' : '▶️'}</Text>
@@ -133,6 +150,10 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
     },
+    playingimg: {
+        width: 50,
+        height: 50,
+    }
 });
 
 export default Music;
