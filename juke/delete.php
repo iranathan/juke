@@ -3,9 +3,10 @@
 
     if($_SERVER["REQUEST_METHOD"] == "GET" ) {
         $id = isset($_GET["id"]) ? $_GET["id"] : null;
-        if($id === null){
-            header("Location: /juke/list.php");
-        }
+        if($id === null) header("Location: /juke/list.php");
+        $song = fetch_song($id);
+        if($song === false) header("Location: /juke/list.php");
+        $song = $song->fetchArray();
     }
 
     if($_SERVER["REQUEST_METHOD"] == "POST"){
@@ -67,7 +68,7 @@
 </head>
 <body>
     <form class="divwow" method="post">
-        <h1>Delete Song <?= $id ?></h1>
+        <h1>Delete Song <?= $song["name"] ?>?</h1>
         <input class="words" type="hidden" name="id" value="<?= $id ?>">
         <label class="words" for="password">Password:</label>
         <input class="words" type="password" id="password" name="password">

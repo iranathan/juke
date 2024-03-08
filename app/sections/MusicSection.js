@@ -2,6 +2,7 @@ import { Audio } from 'expo-av';
 import React, { useEffect, useState } from 'react';
 import { StatusBar, StyleSheet, Dimensions, ScrollView, Pressable, Text, View, Image } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
+import { FontAwesome } from '@expo/vector-icons';
 
 const api = "https://88888.stu.sd-lab.nl/juke";
 const screenWidth = Dimensions.get('window').width;
@@ -74,7 +75,7 @@ export function Music() {
                                 <Image source={{ uri: `${api}/images/${song.id}.${song.imageType}` }} style={styles.songImage} />
                                 <Text style={styles.text}>{song.name}</Text>
                                 <Pressable onPress={() => clickPlay(song).catch(console.error)} style={styles.playButton}>
-                                    <Text>{currentSong && currentSong.id === song.id ? '⏸️' : '▶️'}</Text>
+                                    <FontAwesome name={currentSong && currentSong.id === song.id ? 'pause' : 'play'} size={24} color="black" />
                                 </Pressable>
                             </View>
                         ))}
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 24,
-        marginBottom: 20,
+        marginBottom: 10,
         color: "white"
     },
     flexContainer: {
@@ -134,10 +135,11 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
     },
-    playingimg: {
-        width: 50,
-        height: 50,
-    }
+    songName: {
+        color: 'white',
+        fontSize: 18,
+        marginTop: 10,
+    },
 });
 
 export default Music;
