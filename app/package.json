@@ -17,6 +17,7 @@
     "react-dom": "18.2.0",
     "react-native": "0.73.4",
     "react-native-fs": "^2.20.0",
+    "react-native-progress": "^5.0.1",
     "react-native-web": "~0.19.6"
   },
   "devDependencies": {
